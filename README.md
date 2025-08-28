@@ -28,7 +28,7 @@
     <h3>Why does this matter?</h3>
     Based on the CIA triad (Confidentiality, Integrity, and Availability).<br>
     <img src="https://www.cobalt.io/hs-fs/hubfs/CIA%20Triad%20Graphic-png.png?width=367&height=350&name=CIA%20Triad%20Graphic-png.png" width="230px"><br>
-    To keep integrity of all our files, this system detect if some change was performed with the file such as: if a new file was created or deleted, if the content has moddified and if permissions has changed.
+    To keep integrity of all our files, this system detect if some change was performed with the file such as: if a new file was created or deleted, if the content has modified and if permissions has changed.
 </div>
 
 
