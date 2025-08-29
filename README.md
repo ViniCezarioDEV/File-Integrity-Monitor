@@ -12,11 +12,12 @@
     - Baseline creation timestamps
     - File creation timestamps
     - File Hash value
+    - File Owner and Group
 
 - Monitoring changes
     - Performing continuously or periodically scans the designated files
     - Detect if the hash value match with the baseline hash
-    - Detect if some file has been deleted or created
+    - Detect if some file has been deleted or created and more
 
 - Generate alerts.
     - If any discrepancies are found (a different hash value, a new file, or a deleted file), the FIM system generates an alert
