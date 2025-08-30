@@ -25,6 +25,16 @@
             "last_time_modified": "Fri Aug 29 16:04:52 2025",
             "owner": "vinas",
             "group": "vinas"
+        },
+        "backup001.bkp": {
+            "file_name": "backup001.bkp",
+            "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "permissions": "-rw-r--r--",
+            "creation_time": "Sat Aug 30 15:45:44 2025",
+            "last_time_accessed": "Sat Aug 30 15:45:44 2025",
+            "last_time_modified": "Sat Aug 30 15:45:44 2025",
+            "owner": "vinas",
+            "group": "vinas"
         }
     }
 }

@@ -98,37 +98,59 @@ def check_hash(file_obj):
     with open('baseline.json', 'r') as baseline_file:
         original_data = json.load(baseline_file)
 
-    baseline_file_hash = original_data['files'][file_obj['file_name']]['hash']
-    current_file_hash = file_obj['hash']
+    try:
+        baseline_file_hash = original_data['files'][file_obj['file_name']]['hash']
+        current_file_hash = file_obj['hash']
 
-    if baseline_file_hash != current_file_hash:
-        return False # modified
-    else:
-        return True # intact
+        if baseline_file_hash != current_file_hash:
+            return False # modified
+        else:
+            return True # intact
+    except KeyError:
+        return None # probably had its name changed
 
 def generate_hash_alert(file_name):
-    print(f'ALERT - file: {file_name} modified (hashes dont match)')
+    print(f'ALERT - {file_name} | file content modified (hashes dont match)')
 
 def check_name(file_obj):
     with open('baseline.json', 'r') as baseline_file:
         original_data = json.load(baseline_file)
+
+    if file_obj['file_name'] in original_data['files']:
+        return True  # file name unchanged
+
+    for file_name, file_info in original_data['files'].items():
+        hash_in_baseline = file_info['hash']
+        file_hash = file_obj['hash']
+
+        if hash_in_baseline == file_hash:
+            return False  # ALERT file name changed
+
+    return None  # file does not exist in baseline
+
+def generate_file_name_alert(file_name):
+    print(f'ALERT - {file_name} | file name modified (file name does not exist on baseline, but hash exist)')
+
+
+
 
     """
     TODO (2 dias já nesse projeto, achei q ia ser facil)
     nessa parte eu tenho que comparar os nomes dos arquivos para ver se mudou o nome
     porem ao mudar o nome do arquivo, o hash continua o msm,
     logo tem que fazer isso:
-    1- verificar se o file_obj['file_name'] existe na baseline
-        se existir, OTIMO -> quer dizer que nada foi alterado
-        se nao existir -> verificar a hash do file_obj['hash'] com todas as hashes da baseline
-            se existir uma hash na baseline que de match com file_obj['hash'] -> ALERT arquivo X teve o nome mudado
-            se nao existir nenhuma hash que de match -> arquivo nao existe
+    1- verificar se o file_obj['file_name'] existe na baseline --------------------------OK
+        se existir, OTIMO -> quer dizer que nada foi alterado ---------------------------OK
+        se nao existir
+            verificar a hash do file_obj['hash'] com todas as hashes da baseline
+                se existir uma hash na baseline que de match com file_obj['hash'] -> ALERT arquivo X teve o nome mudado
+                se nao existir nenhuma hash que de match -> arquivo nao existe
     """
 
 
 
-monitored_folder = 'sensitive-data/'
-file_path = f'{monitored_folder}test.txt'
+monitored_folder = 'sensitive-data'
+file_path = f'{monitored_folder}/backup001.bkp'
 
 
 # creating baseline file, if not exists
@@ -138,16 +160,31 @@ if not os.path.exists('baseline.json'):
 # send file metadata to baseline file
 #send_file_to_baseline(get_file_info(file_path))
 
-# checks if the current hash matches the baseline hash, name (comparando hash e nome), permissions, owner and group
-# hash file_test.txt: 55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4
-# hash test.txt:      55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4
-
-# Monitoring and Alerting
+# checks if the current hash matches the baseline hash, name (comparando hash e nome), permissions, owner and group, new file, and deleted
+# Alerting
 for file in os.listdir('sensitive-data'):
-    is_same_hash = check_hash(get_file_info(f'sensitive-data/{file}'))
+    # check if file name has changed
+    is_same_name = check_name(get_file_info(f'sensitive-data/{file}'))
+    if not is_same_name:
+        generate_file_name_alert(file)
 
-    if not is_same_hash:
+    # check if file content has changed
+    is_same_hash = check_hash(get_file_info(f'sensitive-data/{file}'))
+    if not is_same_hash and is_same_hash != None:
         generate_hash_alert(file)
+
+    # check if file permissions has changed
+
+
+    # check if file owner or group has changed
+
+
+    # check if some file was created
+
+
+    # check if some file was deleted
+
+
 
 
 
