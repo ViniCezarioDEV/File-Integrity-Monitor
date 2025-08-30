@@ -23,7 +23,6 @@
     - If any discrepancies are found (a different hash value, a new file, or a deleted file), the FIM system generates an alert
     - This alert notifies security personnel of suspicious activity, providing details about the specific file and the nature of the change
     - Generate local logs
-    - Send alert to an email list
 
 <div align="center">
     <h3>Why does this matter?</h3>
