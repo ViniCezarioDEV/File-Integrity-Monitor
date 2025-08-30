@@ -132,23 +132,6 @@ def generate_file_name_alert(file_name):
     print(f'ALERT - {file_name} | file name modified (file name does not exist on baseline, but hash exist)')
 
 
-
-
-    """
-    TODO (2 dias já nesse projeto, achei q ia ser facil)
-    nessa parte eu tenho que comparar os nomes dos arquivos para ver se mudou o nome
-    porem ao mudar o nome do arquivo, o hash continua o msm,
-    logo tem que fazer isso:
-    1- verificar se o file_obj['file_name'] existe na baseline --------------------------OK
-        se existir, OTIMO -> quer dizer que nada foi alterado ---------------------------OK
-        se nao existir
-            verificar a hash do file_obj['hash'] com todas as hashes da baseline
-                se existir uma hash na baseline que de match com file_obj['hash'] -> ALERT arquivo X teve o nome mudado
-                se nao existir nenhuma hash que de match -> arquivo nao existe
-    """
-
-
-
 monitored_folder = 'sensitive-data'
 file_path = f'{monitored_folder}/backup001.bkp'
 
