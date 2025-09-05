@@ -131,9 +131,28 @@ def check_name(file_obj):
 def generate_file_name_alert(file_name):
     print(f'ALERT - {file_name} | file name modified (file name does not exist on baseline, but hash exist)')
 
+def check_permissions(file_obj):
+    with open('baseline.json', 'r') as baseline_file:
+        original_data = json.load(baseline_file)
+
+    try:
+        baseline_file_permissions = original_data['files'][file_obj['file_name']]['permissions']
+        current_file_permissions = file_obj['permissions']
+        if baseline_file_permissions == current_file_permissions:
+            return True # INTACT - is the same permissions
+        else:
+            return False #CHANGED - is not the same permissions
+
+    except KeyError:
+        return None # probably had its name changed
+
+def generate_file_permissions_alert(file_name):
+    print(f'ALERT - {file_name} | file permissions modified (file permissions dont matches)')
+
+
 
 monitored_folder = 'sensitive-data'
-file_path = f'{monitored_folder}/backup001.bkp'
+file_path = f'{monitored_folder}/usernames.txt'
 
 
 # creating baseline file, if not exists
@@ -143,9 +162,14 @@ if not os.path.exists('baseline.json'):
 # send file metadata to baseline file
 #send_file_to_baseline(get_file_info(file_path))
 
-# checks if the current hash matches the baseline hash, name (comparando hash e nome), permissions, owner and group, new file, and deleted
 # Alerting
 for file in os.listdir('sensitive-data'):
+    # check if file permissions has changed
+    # must run with root, to read any permissions without problems
+    is_same_permissions = check_permissions(get_file_info(f'sensitive-data/{file}'))
+    if not is_same_permissions and is_same_permissions != None:
+        generate_file_permissions_alert(file)
+
     # check if file name has changed
     is_same_name = check_name(get_file_info(f'sensitive-data/{file}'))
     if not is_same_name:
@@ -155,9 +179,6 @@ for file in os.listdir('sensitive-data'):
     is_same_hash = check_hash(get_file_info(f'sensitive-data/{file}'))
     if not is_same_hash and is_same_hash != None:
         generate_hash_alert(file)
-
-    # check if file permissions has changed
-
 
     # check if file owner or group has changed
 

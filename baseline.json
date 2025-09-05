@@ -29,10 +29,20 @@
         "backup001.bkp": {
             "file_name": "backup001.bkp",
             "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-            "permissions": "-rw-r--r--",
+            "a": "-rw-r--r--",
             "creation_time": "Sat Aug 30 15:45:44 2025",
             "last_time_accessed": "Sat Aug 30 15:45:44 2025",
             "last_time_modified": "Sat Aug 30 15:45:44 2025",
+            "owner": "vinas",
+            "group": "vinas"
+        },
+        "usernames.txt": {
+            "file_name": "usernames.txt",
+            "hash": "3fde87644df6aab6e3ba2c7ee3c21ae5643a37e0de186b1294d5fe30e7cc89e0",
+            "permissions": "-rw-r--r--",
+            "creation_time": "Fri Sep  5 17:23:16 2025",
+            "last_time_accessed": "Fri Sep  5 17:23:16 2025",
+            "last_time_modified": "Fri Sep  5 17:23:16 2025",
             "owner": "vinas",
             "group": "vinas"
         }
