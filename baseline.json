@@ -45,6 +45,16 @@
             "last_time_modified": "Fri Sep  5 17:23:16 2025",
             "owner": "vinas",
             "group": "vinas"
+        },
+        "only-admins.txt": {
+            "file_name": "only-admins.txt",
+            "hash": "9b9abaa31bcb85cf8b4fbf48a49a832109cd5a1139116b6ea4ea0791f527702b",
+            "permissions": "-rw-r--r--",
+            "creation_time": "Fri Sep  5 17:55:49 2025",
+            "last_time_accessed": "Fri Sep  5 17:55:28 2025",
+            "last_time_modified": "Fri Sep  5 17:55:49 2025",
+            "owner": "vinas",
+            "group": "administrators"
         }
     }
 }

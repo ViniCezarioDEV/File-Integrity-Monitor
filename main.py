@@ -32,19 +32,24 @@ def get_file_permissions(file_path):
     permissions = stat.filemode(file_info.st_mode)
     return permissions
 
-def get_file_info(file_path):
+def get_file_owner_group(file_path):
     stat_info = os.stat(file_path)
     uid = stat_info.st_uid
     gid = stat_info.st_gid
 
+    owner = pwd.getpwuid(uid).pw_name
+    group = grp.getgrgid(gid).gr_name
+
+    return owner, group
+
+def get_file_info(file_path):
     file_name = os.path.basename(file_path)
     last_time_accessed = time.ctime(os.path.getatime(file_path))
     last_time_modified = time.ctime(os.path.getmtime(file_path))
     creation_time = time.ctime(os.path.getctime(file_path))
     file_hash = get_file_hash(file_path)
     file_permissions = get_file_permissions(file_path)
-    owner = pwd.getpwuid(uid).pw_name
-    group = grp.getgrgid(gid).gr_name
+    owner, group = get_file_owner_group(file_path)
 
 
     file_info = {
@@ -149,10 +154,36 @@ def check_permissions(file_obj):
 def generate_file_permissions_alert(file_name):
     print(f'ALERT - {file_name} | file permissions modified (file permissions dont matches)')
 
+def check_owner_group(file_obj):
+    with open('baseline.json', 'r') as baseline_file:
+        original_data = json.load(baseline_file)
+
+    try:
+        response = ''
+        baseline_file_owner = original_data['files'][file_obj['file_name']]['owner']
+        baseline_file_group = original_data['files'][file_obj['file_name']]['group']
+
+        current_file_owner = file_obj['owner']
+        current_file_group = file_obj['group']
+
+        if baseline_file_owner == current_file_owner and baseline_file_group == current_file_group:
+            return False
+        if baseline_file_owner != current_file_owner:
+            response += 'Owner '
+        if baseline_file_group != current_file_group:
+            response += 'Group '
+
+        return response
+
+    except KeyError:
+        return None # probably had its name changed
+
+def generate_file_owner_group_alert(file_name, response):
+    print(f'ALERT - {file_name} | file {response}Changed')
 
 
 monitored_folder = 'sensitive-data'
-file_path = f'{monitored_folder}/usernames.txt'
+file_path = f'{monitored_folder}/only-admins.txt'
 
 
 # creating baseline file, if not exists
@@ -164,16 +195,17 @@ if not os.path.exists('baseline.json'):
 
 # Alerting
 for file in os.listdir('sensitive-data'):
+    # check if file name has changed
+    is_same_name = check_name(get_file_info(f'sensitive-data/{file}'))
+    if not is_same_name:
+        generate_file_name_alert(file)
+
     # check if file permissions has changed
     # must run with root, to read any permissions without problems
     is_same_permissions = check_permissions(get_file_info(f'sensitive-data/{file}'))
     if not is_same_permissions and is_same_permissions != None:
         generate_file_permissions_alert(file)
 
-    # check if file name has changed
-    is_same_name = check_name(get_file_info(f'sensitive-data/{file}'))
-    if not is_same_name:
-        generate_file_name_alert(file)
 
     # check if file content has changed
     is_same_hash = check_hash(get_file_info(f'sensitive-data/{file}'))
@@ -181,6 +213,9 @@ for file in os.listdir('sensitive-data'):
         generate_hash_alert(file)
 
     # check if file owner or group has changed
+    is_same_owner_and_group = check_owner_group(get_file_info(f'sensitive-data/{file}'))
+    if is_same_owner_and_group and is_same_owner_and_group != None:
+        generate_file_owner_group_alert(file, is_same_owner_and_group)
 
 
     # check if some file was created
