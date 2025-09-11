@@ -92,14 +92,12 @@ def send_file_to_baseline(file_obj):
         print(f'File already in baseline: {file_obj["file_name"]}')
         return False
 
-
-
     original_data['files'][file_obj['file_name']] = file_obj
 
     with open('baseline.json', 'w') as baseline_file:
         json.dump(original_data, baseline_file, indent=4)
 
-    print(f'File added to baseline: {file_obj["file_name"]}')
+    print(f'CREATE - {file_obj["file_name"]} | file added to baseline')
     return True
 
 def check_hash(file_obj):
@@ -218,7 +216,6 @@ def generate_deleted_file_alert(file_list):
 # creating baseline file, if not exists
 if not os.path.exists('baseline.json'):
     create_baseline_file()
-
 
 
 # Monitoring and Alerting
