@@ -7,6 +7,10 @@ import pwd
 import grp
 import time
 
+# folder to monitor
+monitored_folder = 'sensitive-data'
+
+
 def get_file_hash(file_path):
     hash_obj = hashlib.sha256()
     try:
@@ -210,28 +214,27 @@ def generate_deleted_file_alert(file_list):
     for file in file_list:
         print(f'ALERT - {file} | file deleted')
 
-monitored_folder = 'sensitive-data'
-file_path = f'{monitored_folder}/fantasma.txt'
-
 
 # creating baseline file, if not exists
 if not os.path.exists('baseline.json'):
     create_baseline_file()
 
-# send file metadata to baseline file
-#send_file_to_baseline(get_file_info(file_path))
+
 
 # Monitoring and Alerting
 for file in os.listdir(monitored_folder):
     # check if file name has changed
     is_same_name = check_name(get_file_info(f'{monitored_folder}/{file}'))
-    if not is_same_name:
+    if not is_same_name and is_same_name != None:
         generate_file_name_alert(file)
     else:
         # check if some file was created
         exist_a_new_file = check_new_file(get_file_info(f'{monitored_folder}/{file}'))
         if exist_a_new_file:
             generate_new_file_alert(file)
+
+            # send file metadata to baseline file
+            send_file_to_baseline(get_file_info(f'{monitored_folder}/{file}'))
 
     # check if file permissions has changed
     # must run with root, to read any permissions without problems
