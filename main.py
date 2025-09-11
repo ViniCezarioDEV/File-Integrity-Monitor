@@ -7,7 +7,6 @@ import pwd
 import grp
 import time
 
-
 def get_file_hash(file_path):
     hash_obj = hashlib.sha256()
     try:
@@ -181,9 +180,38 @@ def check_owner_group(file_obj):
 def generate_file_owner_group_alert(file_name, response):
     print(f'ALERT - {file_name} | file {response}Changed')
 
+def check_new_file(file_obj):
+    with open('baseline.json', 'r') as baseline_file:
+        original_data = json.load(baseline_file)
+
+    for file_name_in_baseline in original_data['files']:
+        if file_obj['file_name'] == file_name_in_baseline:
+            return False  # file exists in baseline
+
+    return True  # file is new
+
+def generate_new_file_alert(file_name):
+    print(f'ALERT - {file_name} | new file created')
+
+def check_deleted_file(monitored_folder):
+    with open('baseline.json', 'r') as baseline_file:
+        original_data = json.load(baseline_file)
+
+    current_files = set(os.listdir(monitored_folder))
+    deleted_files = []
+
+    for file_name_in_baseline in original_data['files']:
+        if file_name_in_baseline not in current_files:
+            deleted_files.append(file_name_in_baseline)
+
+    return deleted_files
+
+def generate_deleted_file_alert(file_list):
+    for file in file_list:
+        print(f'ALERT - {file} | file deleted')
 
 monitored_folder = 'sensitive-data'
-file_path = f'{monitored_folder}/only-admins.txt'
+file_path = f'{monitored_folder}/fantasma.txt'
 
 
 # creating baseline file, if not exists
@@ -193,35 +221,41 @@ if not os.path.exists('baseline.json'):
 # send file metadata to baseline file
 #send_file_to_baseline(get_file_info(file_path))
 
-# Alerting
-for file in os.listdir('sensitive-data'):
+# Monitoring and Alerting
+for file in os.listdir(monitored_folder):
     # check if file name has changed
-    is_same_name = check_name(get_file_info(f'sensitive-data/{file}'))
+    is_same_name = check_name(get_file_info(f'{monitored_folder}/{file}'))
     if not is_same_name:
         generate_file_name_alert(file)
+    else:
+        # check if some file was created
+        exist_a_new_file = check_new_file(get_file_info(f'{monitored_folder}/{file}'))
+        if exist_a_new_file:
+            generate_new_file_alert(file)
 
     # check if file permissions has changed
     # must run with root, to read any permissions without problems
-    is_same_permissions = check_permissions(get_file_info(f'sensitive-data/{file}'))
+    is_same_permissions = check_permissions(get_file_info(f'{monitored_folder}/{file}'))
     if not is_same_permissions and is_same_permissions != None:
         generate_file_permissions_alert(file)
 
 
     # check if file content has changed
-    is_same_hash = check_hash(get_file_info(f'sensitive-data/{file}'))
+    is_same_hash = check_hash(get_file_info(f'{monitored_folder}/{file}'))
     if not is_same_hash and is_same_hash != None:
         generate_hash_alert(file)
 
+
     # check if file owner or group has changed
-    is_same_owner_and_group = check_owner_group(get_file_info(f'sensitive-data/{file}'))
+    is_same_owner_and_group = check_owner_group(get_file_info(f'{monitored_folder}/{file}'))
     if is_same_owner_and_group and is_same_owner_and_group != None:
         generate_file_owner_group_alert(file, is_same_owner_and_group)
 
 
-    # check if some file was created
-
-
-    # check if some file was deleted
+# check if some file was deleted
+deleted_files = check_deleted_file(monitored_folder)
+if deleted_files:
+    generate_deleted_file_alert(deleted_files)
 
 
 

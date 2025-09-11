@@ -55,6 +55,16 @@
             "last_time_modified": "Fri Sep  5 17:55:49 2025",
             "owner": "vinas",
             "group": "administrators"
+        },
+        "fantasma.txt": {
+            "file_name": "fantasma.txt",
+            "hash": "eb91bbad021bfa1a17bb8ea9d1804ae167f058e9cae43e8828b174f3ee16b377",
+            "permissions": "-rw-rw-r--",
+            "creation_time": "Thu Sep 11 18:41:57 2025",
+            "last_time_accessed": "Thu Sep 11 18:41:58 2025",
+            "last_time_modified": "Thu Sep 11 18:41:57 2025",
+            "owner": "vinas",
+            "group": "vinas"
         }
     }
 }
