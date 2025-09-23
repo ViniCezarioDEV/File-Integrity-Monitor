@@ -11,6 +11,14 @@ import time
 monitored_folder = 'sensitive-data'
 
 
+"""
+TODO
+
+fazer o raios do update da versao da baseline
+gerar os logs locais com o LOGGING
+"""
+
+
 def get_file_hash(file_path):
     hash_obj = hashlib.sha256()
     try:
@@ -74,7 +82,8 @@ def create_baseline_file():
             "creation_time": datetime.now().ctime(),
             "monitored_folder": monitored_folder,
             "baseline_version": 1.0,
-            "algorithm": "sha256"
+            "algorithm": "sha256",
+            "OS": "Linux"
         },
         "files": {
 
@@ -212,6 +221,20 @@ def generate_deleted_file_alert(file_list):
     for file in file_list:
         print(f'ALERT - {file} | file deleted')
 
+def update_baseline_file():
+    with open('baseline.json', 'r') as baseline_file:
+        original_data = json.load(baseline_file)
+
+    current_baseline_version = original_data['metadata']['baseline_version']
+    new_baseline_version = current_baseline_version + 1
+    original_data['metadata']['baseline_version'] = new_baseline_version
+
+    with open('baseline.json', 'w') as baseline_file:
+        json.dump(original_data, baseline_file, indent=4)
+
+    print(f'WARN - baseline.json version uptaded {current_baseline_version} -> {new_baseline_version}')
+
+
 
 # creating baseline file, if not exists
 if not os.path.exists('baseline.json'):
@@ -232,6 +255,7 @@ for file in os.listdir(monitored_folder):
 
             # send file metadata to baseline file
             send_file_to_baseline(get_file_info(f'{monitored_folder}/{file}'))
+            update_baseline_file()
 
     # check if file permissions has changed
     # must run with root, to read any permissions without problems
@@ -256,6 +280,7 @@ for file in os.listdir(monitored_folder):
 deleted_files = check_deleted_file(monitored_folder)
 if deleted_files:
     generate_deleted_file_alert(deleted_files)
+
 
 
 
