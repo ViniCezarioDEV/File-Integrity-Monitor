@@ -31,4 +31,13 @@
     To keep integrity of all our files, this system detect if some change was performed with the file such as: if a new file was created or deleted, if the content has modified and if permissions has changed.
 </div>
 
+<div align="center">
+    <h3>How to use the code?</h3>
+    ⚠️Firstly, note that the code is for Linux!⚠️
+</div><br>
 
+- In "<i>main.py</i>", you must put the path of the directory you want to monitor
+- Run the code periodically, or automate the execution
+- Check the "<i>fim_system.log</i>" file to see if any log entries were recorded
+    - If any entry has been recorded, take appropriate action.
+    - If no entries were recorded, <strong>congratulations!</strong> You're ensuring the <strong>integrity</strong> of your data. But always keep monitoring🕵🏻.
