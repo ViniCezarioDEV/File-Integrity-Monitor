@@ -6,17 +6,18 @@ import json
 import pwd
 import grp
 import time
+import logging
 
 # folder to monitor
 monitored_folder = 'sensitive-data'
 
-
-"""
-TODO
-
-fazer o raios do update da versao da baseline
-gerar os logs locais com o LOGGING
-"""
+# logging config
+logging.basicConfig(
+    filename='fim_system.log',
+    filemode='a',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 
 def get_file_hash(file_path):
@@ -126,6 +127,7 @@ def check_hash(file_obj):
 
 def generate_hash_alert(file_name):
     print(f'ALERT - {file_name} | file content modified (hashes dont match)')
+    logging.critical(f'"{file_name}" | file content modified (hashes dont match)')
 
 def check_name(file_obj):
     with open('baseline.json', 'r') as baseline_file:
@@ -145,6 +147,7 @@ def check_name(file_obj):
 
 def generate_file_name_alert(file_name):
     print(f'ALERT - {file_name} | file name modified (file name does not exist on baseline, but hash exist)')
+    logging.critical(f'"{file_name}" | file name modified (file name does not exist on baseline, but hash exist)')
 
 def check_permissions(file_obj):
     with open('baseline.json', 'r') as baseline_file:
@@ -163,6 +166,7 @@ def check_permissions(file_obj):
 
 def generate_file_permissions_alert(file_name):
     print(f'ALERT - {file_name} | file permissions modified (file permissions dont matches)')
+    logging.critical(f'"{file_name}" | file permissions modified (file permissions dont matches)')
 
 def check_owner_group(file_obj):
     with open('baseline.json', 'r') as baseline_file:
@@ -190,6 +194,7 @@ def check_owner_group(file_obj):
 
 def generate_file_owner_group_alert(file_name, response):
     print(f'ALERT - {file_name} | file {response}Changed')
+    logging.critical(f'"{file_name}" | file {response}Changed')
 
 def check_new_file(file_obj):
     with open('baseline.json', 'r') as baseline_file:
@@ -203,6 +208,7 @@ def check_new_file(file_obj):
 
 def generate_new_file_alert(file_name):
     print(f'ALERT - {file_name} | new file created')
+    logging.critical(f'"{file_name}" | new file created')
 
 def check_deleted_file(monitored_folder):
     with open('baseline.json', 'r') as baseline_file:
@@ -220,6 +226,7 @@ def check_deleted_file(monitored_folder):
 def generate_deleted_file_alert(file_list):
     for file in file_list:
         print(f'ALERT - {file} | file deleted')
+        logging.critical(f'"{file}" | file deleted')
 
 def update_baseline_file():
     with open('baseline.json', 'r') as baseline_file:
@@ -232,7 +239,11 @@ def update_baseline_file():
     with open('baseline.json', 'w') as baseline_file:
         json.dump(original_data, baseline_file, indent=4)
 
-    print(f'WARN - baseline.json version uptaded {current_baseline_version} -> {new_baseline_version}')
+    return current_baseline_version, new_baseline_version
+
+def generate_baseline_file_updated_warn(current_baseline_version, new_baseline_version):
+    print(f'INFO - baseline.json version uptaded {current_baseline_version} -> {new_baseline_version}')
+    logging.INFO(f'baseline.json version uptaded {current_baseline_version} -> {new_baseline_version}')
 
 
 
@@ -255,7 +266,9 @@ for file in os.listdir(monitored_folder):
 
             # send file metadata to baseline file
             send_file_to_baseline(get_file_info(f'{monitored_folder}/{file}'))
-            update_baseline_file()
+            current_baseline_version, new_baseline_version = update_baseline_file()
+            if current_baseline_version and new_baseline_version:
+                generate_baseline_file_updated_warn(current_baseline_version, new_baseline_version)
 
     # check if file permissions has changed
     # must run with root, to read any permissions without problems

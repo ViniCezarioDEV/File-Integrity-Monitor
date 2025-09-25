@@ -2,7 +2,7 @@
     "metadata": {
         "creation_time": "Fri Aug 29 15:40:28 2025",
         "monitored_folder": "sensitive-data/",
-        "baseline_version": 2.0,
+        "baseline_version": 4.0,
         "algorithm": "sha256",
         "OS": "Linux"
     },
@@ -77,13 +77,13 @@
             "owner": "vinas",
             "group": "vinas"
         },
-        "deleted.txt": {
-            "file_name": "deleted.txt",
-            "hash": "7bc4768e124bc3b02ad86923dc43dfed7262e3b224fc524e56ef0bc997d20e05",
+        "test_baseline_version_file.txt": {
+            "file_name": "test_baseline_version_file.txt",
+            "hash": "5c103bdbf85e8451629ce19a10ed1b705d5dd2c366ca4f29065ee90816df8ded",
             "permissions": "-rw-rw-r--",
-            "creation_time": "Mon Sep 22 20:51:14 2025",
-            "last_time_accessed": "Mon Sep 22 20:51:16 2025",
-            "last_time_modified": "Mon Sep 22 20:51:14 2025",
+            "creation_time": "Mon Sep 22 21:18:36 2025",
+            "last_time_accessed": "Mon Sep 22 21:18:38 2025",
+            "last_time_modified": "Mon Sep 22 21:18:36 2025",
             "owner": "vinas",
             "group": "vinas"
         }
